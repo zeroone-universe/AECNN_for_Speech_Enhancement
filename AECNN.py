@@ -21,7 +21,7 @@ class AECNN(nn.Module):
 
         self.Encoder = AECNN_Encoder(in_channels, num_layers, kernel_size)
         self.Decoder = AECNN_Decoder(out_channels, num_layers, kernel_size)
-
+     
     def forward(self, x):
         '''
         while len(x.size()) < 2 :
