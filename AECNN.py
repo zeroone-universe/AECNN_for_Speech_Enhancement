@@ -34,7 +34,7 @@ class AECNN(nn.Module):
 
         x_enh = self.Decoder(x, down)[..., :x_len]
 
-        #print(x_enh.shape)
+        #print(x_enh.shape)g
         return x_enh
 
     def get_name(self):
