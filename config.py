@@ -10,7 +10,9 @@ RANDOM_SEED = 0b011011
 #-----------------------------------------------
 
 EPOCHS_SAVE_START = 0
+#Path of output of validation. 
 OUTPUT_DIR_PATH = "/media/youngwon/Neo/NeoChoi/TIL/TIL_Dataset/AECNN_enhancement/TIMIT_enhanced"
+
 LOGGER_PATH = "/media/youngwon/Neo/NeoChoi/TIL/Pytorch-DL/AECNN/tb_logger"
 
 MAX_EPOCHS= 50
