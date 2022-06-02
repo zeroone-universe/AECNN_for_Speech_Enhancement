@@ -81,22 +81,15 @@ class CEDataModule(pl.LightningDataModule):
     
     def setup(self, stage=None):
         self.train_dataset = CEDataset(
-            path_dir_dist = os.path.join(DATA_DIR, INPUT_DIR, "train"),
-            path_dir_orig = os.path.join(DATA_DIR, TARGET_DIR, "train"),
-            seg_len = self.seg_len,
+            path_dir_dist = os.path.join(DATA_DIR, NOISY_TRAIN),
+            path_dir_orig = os.path.join(DATA_DIR, TARGET_TRAIN),
             mode = "train"
             )
 
-        self.test_dataset = CEDataset(
-            path_dir_dist = os.path.join(DATA_DIR, INPUT_DIR, "test"),
-            path_dir_orig = os.path.join(DATA_DIR, TARGET_DIR, "test"),
-            seg_len = self.seg_len,
-            mode = "test"
-            )
 
         self.test_dataset = CEDataset(
-            path_dir_dist = os.path.join(DATA_DIR, INPUT_DIR, "test"),
-            path_dir_orig = os.path.join(DATA_DIR, TARGET_DIR, "test"),
+            path_dir_dist = os.path.join(DATA_DIR, NOISY_TEST),
+            path_dir_orig = os.path.join(DATA_DIR, TARGET_TEST),
             seg_len = self.seg_len,
             mode = "test"
             )

@@ -23,7 +23,6 @@ class TrainAECNN(pl.LightningModule):
         self.model = AECNN()
         self.lr = INITIAL_LR
         self.model = AECNN(in_channels=1, out_channels = 1, num_layers = NUM_LAYERS, kernel_size=KERNEL_SIZE)
-        self.loss_type =  args.loss_type
         
     def forward(self,x):
         x_padded = F.pad(x, (0,WINDOW_SIZE), "constant", 0)
@@ -49,8 +48,6 @@ class TrainAECNN(pl.LightningModule):
         return x_seg, output_seg, wav_rec
 
     def loss_fn(self, s_noisy, s_orig):
-        # if self.loss_type == "SISNR":
-        #     loss_function = SISNRLoss()
         
         loss_function = STFTLoss()
         

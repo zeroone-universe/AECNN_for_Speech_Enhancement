@@ -37,10 +37,5 @@ def main(args):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description = "Train AECNN")
-
-
-    #training_args
-    parser.add_argument("--loss_type", default = "STFT", type = str, help = "loss type")
-
     args = parser.parse_args()
     main(args)

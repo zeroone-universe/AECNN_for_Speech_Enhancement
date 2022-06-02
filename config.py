@@ -21,8 +21,13 @@ MAX_EPOCHS= 50
 #directory that have every dataset in it.
 DATA_DIR = "/media/youngwon/Neo/NeoChoi/TIL/TIL_Dataset/AECNN_enhancement"
 
-INPUT_DIR = "TIMIT_decoded"
-TARGET_DIR = "TIMIT"
+#Noisy dataset
+NOISY_TRAIN = "TIMIT_decoded/TRAIN"
+NOISY_TEST = "TIMIT_decoded/TEST"
+
+#Target dataset
+TARGET_TRAIN = "TIMIT/TRAIN"
+TARGET_TEST = "TIMIT/TEST"
 
 BATCH_SIZE = 8
 SEG_LEN = 2
