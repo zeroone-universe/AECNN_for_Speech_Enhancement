@@ -52,65 +52,6 @@ class STFTLoss:
             total_loss+=loss
 
         return total_loss/total_num
-
-
-        # x_proc = x_proc[...,:x_orig.shape[-1]].squeeze()
-        # x_orig = x_orig[...,:x_proc.shape[-1]].squeeze()        
-        
-        # loss_pha = [] 
-        # loss_mag = []
-        
-        
-        # for scale in self.scales:
-        #     for win_len in self.win_lens:
-        #         hop_len = int(win_len*(1-self.overlap_ratio))
-        #         X_proc, X_proc_mag = stft_mag(scale*x_proc, 
-        #                               nfft = win_len*2, 
-        #                               win_length = win_len, 
-        #                               hop_length = hop_len)
-                
-        #         X_orig, X_orig_mag = stft_mag(scale*x_orig, 
-        #                               nfft = win_len*2, 
-        #                               win_length = win_len, 
-        #                               hop_length = hop_len)
-                
-        #         X_orig_mag = X_orig_mag.add(1).log()
-        #         X_proc_mag = X_proc_mag.add(1).log()
-                
-        #         X_norm = X_orig_mag.pow(2).mean(dim=( -1, -2), keepdim=True).sqrt().add(1e-10)
-
-                
-        #         X_proc_mag = X_proc_mag/X_norm
-        #         X_orig_mag = X_orig_mag/X_norm
-                
-        #         loss_mag_temp = (X_proc_mag - X_orig_mag).abs().pow(self.p).mean()
-        #         # loss_mag_temp = (X_proc_mag.add(1e-10).log() - X_orig_mag.add(1e-10).log()).abs().pow(self.p).mean()
-        #         # loss_mag_temp = abs_mean((((X_proc_mag-X_orig_mag)/ X_orig_mag.add(1e-10))).tanh().abs().pow(self.p), mean_ord = self.mean_ord)
-                
-                
-        #         # loss_mag_temp += (X_proc_mag - X_orig_mag).norm()/(X_orig_mag.norm())
-                
-                
-        #         loss_mag.append(loss_mag_temp)
-                
-        #         if self.RI_MAG:
-                    
-        #             X_orig = X_orig.sign()*X_orig.abs().add(1).log()
-        #             X_proc = X_proc.sign()*X_proc.abs().add(1).log()
-                    
-        #             X_norm = X_orig.pow(2).mean(dim=( -1, -2, -3), keepdim=True).sqrt().add(1e-10)
-                    
-        #             X_proc = X_proc/X_norm
-        #             X_orig = X_orig/X_norm
-                                    
-        #             loss_pha_temp = (X_proc - X_orig).abs().pow(self.p).mean()
-        #             loss_pha.append(loss_pha_temp)
-            
-        # loss_mag = sum(loss_mag)/len(loss_mag)
-        # loss_pha = sum(loss_pha)/len(loss_pha) if self.RI_MAG else (x_proc-x_orig).abs().pow(self.p).mean()
-        
-        # loss_total = self.r * loss_pha + (1-self.r) * loss_mag
-        # return loss_total
     
     def get_name(self):
         return self.name
