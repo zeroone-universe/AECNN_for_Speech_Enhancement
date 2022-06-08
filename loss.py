@@ -50,7 +50,7 @@ class STFTLoss:
             x_target = x_orig[idx]
             loss = torch.mean(torch.abs(stft_RIsum(x_target) - stft_RIsum(x_noisy)))
             total_loss+=loss
-
+   
         return total_loss/total_num
     
     def get_name(self):
