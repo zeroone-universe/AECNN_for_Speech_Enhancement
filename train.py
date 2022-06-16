@@ -107,7 +107,21 @@ class TrainAECNN(pl.LightningModule):
 
         
     def test_step(self, batch, batch_idx):
-        pass
+        wav_dist, wav_target, filename = batch
+
+        target_seg, output_seg, wav_enh  = self.forward(wav_dist)
+        
+        
+        wav_enh_cpu = wav_enh.squeeze(0).cpu()
+        ta.save(os.path.join(OUTPUT_DIR_PATH, f"{filename[0]}.wav"), wav_enh_cpu, 16000 )
+
+        wav_target = wav_target.squeeze().cpu().numpy()
+        wav_enh = wav_enh.squeeze().cpu().numpy()
+
+        test_pesq = pesq(fs = 16000, ref = wav_target, deg = wav_enh, mode = "wb")
+
+        self.log("test_pesq", test_pesq)
+
 
     def predict_step(self, batch, batch_idx):
         pass
