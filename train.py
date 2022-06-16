@@ -52,7 +52,7 @@ class TrainAECNN(pl.LightningModule):
             loss_function = SISNRLoss()
         elif LOSS_TYPE == "STFTLoss":
             loss_function = STFTLoss()
-        elif LOSS_TYPE == "MelspecLoss":
+        elif LOSS_TYPE == "MelSpecLoss":
             loss_function = MelSpecLoss()
         return loss_function(s_noisy, s_orig)
 
