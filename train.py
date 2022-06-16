@@ -48,9 +48,12 @@ class TrainAECNN(pl.LightningModule):
         return x_seg, output_seg, wav_rec
 
     def loss_fn(self, s_noisy, s_orig):
-        
-        loss_function = STFTLoss()
-        
+        if LOSS_TYPE == "SISNRLoss":
+            loss_function = SISNRLoss()
+        elif LOSS_TYPE == "STFTLoss":
+            loss_function = STFTLoss()
+        elif LOSS_TYPE == "MelspecLoss":
+            loss_function = MelSpecLoss()
         return loss_function(s_noisy, s_orig)
 
     def configure_optimizers(self):

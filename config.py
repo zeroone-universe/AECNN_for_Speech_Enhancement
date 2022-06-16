@@ -11,9 +11,9 @@ RANDOM_SEED = 0b011011
 
 EPOCHS_SAVE_START = 0
 #Path of output of validation. 
-OUTPUT_DIR_PATH = "/media/youngwon/Neo/NeoChoi/TIL/TIL_Dataset/AECNN_enhancement/TIMIT_enhanced"
+OUTPUT_DIR_PATH = "/media/youngwon/Neo/NeoChoi/Projects/AECNN_for_Speech_Enhancement/test"
 
-LOGGER_PATH = "/media/youngwon/Neo/NeoChoi/TIL/Pytorch-DL/AECNN/tb_logger"
+LOGGER_PATH = "/media/youngwon/Neo/NeoChoi/Projects/AECNN_for_Speech_Enhancement/tb_logger"
 
 MAX_EPOCHS= 50
 
@@ -47,8 +47,10 @@ KERNEL_SIZE = 11
 #-----------------------------------------------
 #3. Loss
 #-----------------------------------------------
-LOSS_TYPE = "STFTLoss"
+# LOSS_TYPE = "STFTLoss"
 #LOSS_TYPE = "SISNRLoss"
+LOSS_TYPE = "MelSpecLoss"
+
 #for STFT Loss
 STFTLOSS_WINDOW_SIZE = 512
 STFTLOSS_HOP_SIZE = 256
