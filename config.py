@@ -49,7 +49,8 @@ KERNEL_SIZE = 11
 #-----------------------------------------------
 # LOSS_TYPE = "STFTLoss"
 #LOSS_TYPE = "SISNRLoss"
-LOSS_TYPE = "MelSpecLoss"
+# LOSS_TYPE = "MelSpecLoss"
+LOSS_TYPE = "DemucsLoss"
 
 #for STFT Loss
 STFTLOSS_WINDOW_SIZE = 512

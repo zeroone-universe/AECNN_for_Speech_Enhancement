@@ -54,6 +54,8 @@ class TrainAECNN(pl.LightningModule):
             loss_function = STFTLoss()
         elif LOSS_TYPE == "MelSpecLoss":
             loss_function = MelSpecLoss()
+        elif LOSS_TYPE == "DemucsLoss":
+            loss_function = DemucsLoss()
         return loss_function(s_noisy, s_orig)
 
     def configure_optimizers(self):
