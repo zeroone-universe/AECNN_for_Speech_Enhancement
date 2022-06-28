@@ -48,6 +48,9 @@ KERNEL_SIZE = 11
 #3. Loss
 #-----------------------------------------------
 LOSS_TYPE = "STFTLoss"
+
+
+#other losses...
 #LOSS_TYPE = "SISNRLoss"
 # LOSS_TYPE = "MelSpecLoss"
 #LOSS_TYPE = "DemucsLoss"
