@@ -6,6 +6,7 @@ import os
 
 import pytorch_lightning as pl
 
+
 from config import *
 from utils import *
 
@@ -32,7 +33,7 @@ class CEDataset(Dataset):
             wav_dist, _ = ta.load(path_wav_dist)
             self.wavs[filename]=(wav_orig, wav_dist)
             self.filenames.append(filename)
-
+            print('\r%d th file loaded'%len(self.filenames), end='')
         self.filenames.sort()
         
 
