@@ -1,3 +1,4 @@
 *.wav
 test
 tb_logger
+__pycache__
