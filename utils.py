@@ -23,5 +23,3 @@ def check_dir_exist(path_list):
 
 def get_filename(path):
     return os.path.splitext(os.path.basename(path))  
-
-print(get_filename("/media/youngwon/Neo/NeoChoi/TIL/Pytorch-DL/AECNN/Datamodule.py"))
