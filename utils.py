@@ -1,9 +1,5 @@
 import os
 
-import torch 
-import torch.nn as nn
-import torch.nn.functional as F
-
 def segmentation(x, frame_size, hop_size):
     x_seg =x.unfold(-1, frame_size, hop_size)
     x_seg = x_seg.transpose(0,1).contiguous()

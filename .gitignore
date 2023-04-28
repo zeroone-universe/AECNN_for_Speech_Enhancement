@@ -1,6 +1,7 @@
 *.wav
 test
-
+__py
 *.ipynb
 logger
 output
+__pycache__ 

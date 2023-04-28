@@ -13,15 +13,15 @@ random_seed: 0b011011
 dataset:
 
 #directory that have every dataset in it.
-  data_dir: /media/youngwon/Neo/NeoChoi/Dataset/TIMIT
+  data_dir: /media/youngwon/Neo/NeoChoi/Dataset/noisy-vctk-16k-speechbrain
 
   # clean_train: "clean/train"
-  clean_train: "clean/test"
-  clean_val: "clean/test"
+  clean_train: "clean_trainset_28spk_wav_16k"
+  clean_val: "clean_testset_wav_16k"
 
   # noisy_train: "noisy/train"
-  noisy_train: "noisy/test"
-  noisy_val: "noisy/test"
+  noisy_train: "noisy_trainset_28spk_wav_16k"
+  noisy_val: "noisy_testset_wav_16k"
 
 #So for this case, wideband test dataset should be located at "/media/zeroone/target/test"
 
@@ -50,12 +50,12 @@ loss:
 #4. Optimizer(ADAM)
 #-----------------------------------------------
 optim:
-  initial_lr: 0.001
+  initial_lr: 0.0002
 
   B1: 0.5
   B2: 0.9
 
-  lr_gamma: 0.9
+  lr_gamma: 1
 
 #-----------------------------------------------
 #Training

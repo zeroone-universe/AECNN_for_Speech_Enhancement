@@ -1,14 +1,12 @@
 import pytorch_lightning as pl
 import torch
 
-from AECNN import AECNN
-
+import os
 import torch.nn.functional as F
 import torchaudio as ta
-import os
 from loss import *
-from config import *
 from utils import *
+from AECNN import AECNN
 
 class SETrain(pl.LightningModule):
     def __init__(self, config):
@@ -104,11 +102,8 @@ class SETrain(pl.LightningModule):
         #     sample_rate = 16000
         # )
         
-        
-        
     def test_step(self, batch, batch_idx):
         pass
-
 
     def predict_step(self, batch, batch_idx):
         pass
@@ -132,5 +127,7 @@ class SETrain(pl.LightningModule):
             kernel_size = (1, self.frame_size),
             stride = (1, self.hop_size)
         ).squeeze(-2)
+        
+        wav_rec = wav_rec / (self.frame_size/(2*self.hop_size))
         
         return wav_rec

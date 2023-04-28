@@ -1,12 +1,9 @@
-import torch
 from torch.utils.data import Dataset, DataLoader
 import torchaudio as ta
-import numpy as np
 import os
 
 import pytorch_lightning as pl
 
-from config import *
 from utils import *
 
 class SEDataset(Dataset): 
@@ -31,6 +28,8 @@ class SEDataset(Dataset):
             for idx in range(wav_clean_seg.shape[0]):
                 self.wavs.append([wav_noisy_seg[idx], wav_clean_seg[idx]])
             
+            if wav_idx ==10000:
+                break
     # 총 데이터의 개수를 리턴
     def __len__(self):
         return len(self.wavs)
