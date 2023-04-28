@@ -1,4 +1,4 @@
-from AECNN_for_Speech_Enhancement.atamodule import SEDataModule
+from AECNN_for_Speech_Enhancement.datamodule import SEDataModule
 
 from train import SETrain
 

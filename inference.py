@@ -5,7 +5,7 @@ import torch
 import torch.nn.functional as F
 
 from train import SETrain
-from AECNN_for_Speech_Enhancement.atamodule import *
+
 from utils import *
 import yaml
 
