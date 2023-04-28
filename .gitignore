@@ -1,4 +1,6 @@
 *.wav
 test
-tb_logger
-__pycache__
+
+*.ipynb
+logger
+output

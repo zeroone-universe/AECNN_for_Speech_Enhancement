@@ -1,5 +1,15 @@
 import os
 
+import torch 
+import torch.nn as nn
+import torch.nn.functional as F
+
+def segmentation(x, frame_size, hop_size):
+    x_seg =x.unfold(-1, frame_size, hop_size)
+    x_seg = x_seg.transpose(0,1).contiguous()
+    return x_seg
+
+
 def get_wav_paths(paths: list):
     wav_paths=[]
     if type(paths)==str:
@@ -23,3 +33,8 @@ def check_dir_exist(path_list):
 
 def get_filename(path):
     return os.path.splitext(os.path.basename(path))  
+
+def get_one_sample_path(dir_noisy_path, dir_clean_path):
+    wav_noisy_path = get_wav_paths(dir_noisy_path)[0]
+    wav_clean_path = get_wav_paths(dir_clean_path)[0]
+    return wav_noisy_path, wav_clean_path

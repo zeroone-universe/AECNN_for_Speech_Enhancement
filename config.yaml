@@ -1,0 +1,70 @@
+
+#-----------------------------------------------
+#Config that does not have impact on performance
+#-----------------------------------------------
+
+
+random_seed: 0b011011
+
+#-----------------------------------------------
+#1. Dataset
+#-----------------------------------------------
+
+dataset:
+
+#directory that have every dataset in it.
+  data_dir: /media/youngwon/Neo/NeoChoi/Dataset/TIMIT
+
+  # clean_train: "clean/train"
+  clean_train: "clean/test"
+  clean_val: "clean/test"
+
+  # noisy_train: "noisy/train"
+  noisy_train: "noisy/test"
+  noisy_val: "noisy/test"
+
+#So for this case, wideband test dataset should be located at "/media/zeroone/target/test"
+
+  frame_size: 2048
+  hop_size: 256
+
+  batch_size: 256
+  num_workers: 16
+ 
+#-----------------------------------------------
+#2. Model
+#-----------------------------------------------
+
+model:
+  kernel_size: 11
+
+#-----------------------------------------------
+#3. Loss
+#-----------------------------------------------
+#for STFT Loss
+loss:
+  window_size: 512
+  hop_size: 256
+
+#-----------------------------------------------
+#4. Optimizer(ADAM)
+#-----------------------------------------------
+optim:
+  initial_lr: 0.001
+
+  B1: 0.5
+  B2: 0.9
+
+  lr_gamma: 0.9
+
+#-----------------------------------------------
+#Training
+#-----------------------------------------------
+
+train:
+  total_epoch: 100
+
+#Path of output of validation. 
+  output_dir_path: "./output"
+  logger_path: "./logger"
+

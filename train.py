@@ -1,129 +1,136 @@
-from fileinput import filename
 import pytorch_lightning as pl
 import torch
-from torch import nn
-
-import torchaudio as ta
-
-import sys
-
-import torchmetrics
-from pytorch_lightning.callbacks.early_stopping import EarlyStopping
-import os
 
 from AECNN import AECNN
+
+import torch.nn.functional as F
+import torchaudio as ta
+import os
 from loss import *
 from config import *
+from utils import *
 
-from pesq import pesq
-
-class TrainAECNN(pl.LightningModule):
-    def __init__(self, args):
-        super(TrainAECNN, self).__init__()
-        self.model = AECNN()
-        self.lr = INITIAL_LR
-        self.model = AECNN(in_channels=1, out_channels = 1, num_layers = NUM_LAYERS, kernel_size=KERNEL_SIZE)
+class SETrain(pl.LightningModule):
+    def __init__(self, config):
+        super(SETrain, self).__init__()
+        self.automatic_optimization = False
+        self.config = config
+        
+        self.kernel_size = config['model']['kernel_size']
+        self.aecnn = AECNN(kernel_size = self.kernel_size)
+        
+        self.criterion = STFTLoss(config = config)
+        
+        #optimizer & scheduler parameters
+        self.initial_lr = config['optim']['initial_lr']
+        self.lr_gamma = config['optim']['lr_gamma']
+        
+        #
+        self.frame_size = config["dataset"]["frame_size"]
+        self.hop_size = config["dataset"]["hop_size"]
+        
+        #Sample for logging
+        self.data_dir = config['dataset']['data_dir']
+        self.path_dir_noisy_val = config['dataset']['noisy_val']
+        self.path_dir_clean_val =  config['dataset']['clean_val']
+        
+        self.output_dir_path = config['train']['output_dir_path']
+        
+        self.path_sample_noisy, self.path_sample_clean = get_one_sample_path(dir_noisy_path= os.path.join(self.data_dir, self.path_dir_noisy_val), dir_clean_path=os.path.join(self.data_dir, self.path_dir_clean_val))
         
     def forward(self,x):
-        x_padded = F.pad(x, (0,WINDOW_SIZE), "constant", 0)
-        x_seg =x_padded.unfold(-1, WINDOW_SIZE, HOP_SIZE)
-        B, C, T, L = x_seg.shape
-        x_seg = x_seg.transpose(1,2).contiguous()
-        x_seg = x_seg.view(B*T, C, L)
+        output = self.aecnn(x)
+        return output
 
-        output_seg = self.model(x_seg)
-
-        output = output_seg.view(B,T,C,L).transpose(1,2).contiguous()
-        output = output.view(B, C*T, L)
-
-        wav_rec = F.fold(
-            output.transpose(1,2).contiguous()*torch.hann_window(WINDOW_SIZE, device = x.device).view(1, -1, 1),
-            output_size = [1, (output.shape[-2]-1) *HOP_SIZE +  WINDOW_SIZE],
-            kernel_size = (1,  WINDOW_SIZE),
-            stride = (1, HOP_SIZE)    
-        ).squeeze(-2)
-
-        wav_rec = wav_rec[...,:x.shape[-1]]
-
-        return x_seg, output_seg, wav_rec
-
-    def loss_fn(self, s_noisy, s_orig):
-        if LOSS_TYPE == "SISNRLoss":
-            loss_function = SISNRLoss()
-        elif LOSS_TYPE == "STFTLoss":
-            loss_function = STFTLoss()
-        elif LOSS_TYPE == "MelSpecLoss":
-            loss_function = MelSpecLoss()
-        elif LOSS_TYPE == "DemucsLoss":
-            loss_function = DemucsLoss()
-        return loss_function(s_noisy, s_orig)
 
     def configure_optimizers(self):
-        optimizer = torch.optim.Adam(self.model.parameters(), lr=self.lr)
-        lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma = LR_GAMMA, last_epoch = - 1, verbose=True)
-        return ([optimizer], [lr_scheduler])
+        optimizer = torch.optim.Adam(self.aecnn.parameters(), lr=self.initial_lr)
+        scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma = self.lr_gamma, verbose=True)
+        return {'optimizer': optimizer, 'lr_scheduler': scheduler}
         
     def training_step(self, batch, batch_idx):
-        wav_dist, wav_target, _ = batch
-        x_seg, output_seg, wav_enh = self.forward(wav_dist)
+        optimizer = self.optimizers()
+        scheduler = self.lr_schedulers()
         
-
-        #wav_target을 segmentation
-        wav_target = F.pad(wav_target, (0,WINDOW_SIZE), "constant", 0)
-        wav_target_seg =wav_target.unfold(-1, WINDOW_SIZE, HOP_SIZE)
-        B, C, T, L = wav_target_seg.shape
-        wav_target_seg = wav_target_seg.transpose(1,2).contiguous()
-        wav_target_seg = wav_target_seg.view(B*T, C, L)
-
-        loss = self.loss_fn(output_seg, wav_target_seg)
-        # loss = self.loss_fn(wav_enh, wav_target)
-        self.log("training_loss" , loss)
-        return loss 
+        wav_noisy, wav_clean = batch
+        wav_enh = self.forward(wav_noisy)
+        
+        loss = self.criterion(wav_enh, wav_clean)
+        
+        optimizer.zero_grad()
+        self.manual_backward(loss)
+        optimizer.step()
+        
+        self.log("train_loss", loss,  prog_bar = True, batch_size = self.config['dataset']['batch_size'])
+        
+        if self.trainer.is_last_batch:
+            scheduler.step()
 
     def validation_step(self, batch, batch_idx):
-        wav_dist, wav_target, filename = batch
-
-        target_seg, output_seg, wav_enh  = self.forward(wav_dist)
+        wav_noisy, wav_clean = batch
+        wav_enh = self.forward(wav_noisy)
         
-         #wav_target을 segmentation
-        wav_target = F.pad(wav_target, (0,WINDOW_SIZE), "constant", 0)
-        wav_target_seg =wav_target.unfold(-1, WINDOW_SIZE, HOP_SIZE)
-        B, C, T, L = wav_target_seg.shape
-        wav_target_seg = wav_target_seg.transpose(1,2).contiguous()
-        wav_target_seg = wav_target_seg.view(B*T, C, L)
+        loss = self.criterion(wav_enh, wav_clean)
 
-        val_loss = self.loss_fn(output_seg, wav_target_seg)
+        self.log("val_loss", loss, batch_size = self.config['dataset']['batch_size'])
         
-        if self.current_epoch >= EPOCHS_SAVE_START:
-            wav_enh_cpu = wav_enh.squeeze(0).cpu()
-            ta.save(os.path.join(OUTPUT_DIR_PATH, f"{filename[0]}.wav"), wav_enh_cpu, 16000 )
-
-        wav_target = wav_target.squeeze().cpu().numpy()
-        wav_enh = wav_enh.squeeze().cpu().numpy()
-
-        val_pesq = pesq(fs = 16000, ref = wav_target, deg = wav_enh, mode = "wb")
-
-        self.log("val_loss", val_loss)
-        self.log("val_pesq", val_pesq)
-
-
+    def on_validation_epoch_end(self):
+        
+        sample_noisy, _  = ta.load(self.path_sample_noisy)
+        sample_clean, _ = ta.load(self.path_sample_clean)
+        sample_noisy = sample_noisy.to(self.device)
+        sample_clean =sample_clean.to(self.device)
+        
+        sample_enh = self.synth_one_sample(sample_noisy)
+        sample_enh = sample_enh.squeeze(0).cpu()
+        
+        ta.save(f"{self.output_dir_path}/sample_{self.current_epoch}.wav", sample_enh, 16000)
+        
+        #My implementation is showing an error in logging audio. 
+        #It seems to be either an issue with the conda environment or with the code itself.
+        #If possible to resolve, please leave a comment on the issue. Thank you.
+        
+        # self.logger.experiment.add_audio(
+        #     tag='sample/enhanced',
+        #     snd_tensor = sample_enh.squeeze().detach(),
+        #     global_step = self.global_step,
+        #     sample_rate = 16000
+        # )
+        
+        # self.logger.experiment.add_audio(
+        #     tag='sample/clean',
+        #     snd_tensor = sample_clean.squeeze().detach(),
+        #     global_step=self.global_step,
+        #     sample_rate = 16000
+        # )
+        
+        
         
     def test_step(self, batch, batch_idx):
-        wav_dist, wav_target, filename = batch
-
-        target_seg, output_seg, wav_enh  = self.forward(wav_dist)
-        
-        
-        wav_enh_cpu = wav_enh.squeeze(0).cpu()
-        ta.save(os.path.join(OUTPUT_DIR_PATH, f"{filename[0]}.wav"), wav_enh_cpu, 16000 )
-
-        wav_target = wav_target.squeeze().cpu().numpy()
-        wav_enh = wav_enh.squeeze().cpu().numpy()
-
-        test_pesq = pesq(fs = 16000, ref = wav_target, deg = wav_enh, mode = "wb")
-
-        self.log("test_pesq", test_pesq)
+        pass
 
 
     def predict_step(self, batch, batch_idx):
         pass
+
+    def synth_one_sample(self, wav):
+        wav = wav.unsqueeze(1)
+        wav_padded = F.pad(wav, (0, self.frame_size), "constant", 0)
+        wav_seg = wav_padded.unfold(-1,self.frame_size, self.hop_size)
+        B, C, T, L = wav_seg.shape
+        
+        wav_seg = wav_seg.transpose(1,2).contiguous()
+        wav_seg = wav_seg.view(B*T, C, L) 
+
+        wav_seg = self.forward(wav_seg)
+        wav_seg.view(B,T,C,L).transpose(1,2).contiguous()
+        wav_seg = wav_seg.view(B, C*T, L)
+        
+        wav_rec = F.fold(
+            wav_seg.transpose(1,2).contiguous()*torch.hann_window(self.frame_size, device = wav_seg.device).view(1, -1, 1),
+            output_size = [1, (wav_seg.shape[-2]-1)*self.hop_size + self.frame_size],
+            kernel_size = (1, self.frame_size),
+            stride = (1, self.hop_size)
+        ).squeeze(-2)
+        
+        return wav_rec
