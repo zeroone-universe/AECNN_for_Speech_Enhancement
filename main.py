@@ -1,15 +1,13 @@
-import argparse
-from datamodule import SEDataModule
+from AECNN_for_Speech_Enhancement.atamodule import SEDataModule
 
 from train import SETrain
 
 from pytorch_lightning import loggers as pl_loggers
 import pytorch_lightning as pl
-from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
+from pytorch_lightning.callbacks import ModelCheckpoint
 
 import yaml
 from utils import *
-from config import *
 
 def main(args):
     pl.seed_everything(config['random_seed'], workers=True)
@@ -19,7 +17,7 @@ def main(args):
     check_dir_exist(config['train']['output_dir_path'])
     check_dir_exist(config['train']['logger_path'])
 
-    tb_logger = pl_loggers.TensorBoardLogger(config['train']['logger_path'], name=f"SRGAN_logs")
+    tb_logger = pl_loggers.TensorBoardLogger(config['train']['logger_path'], name=f"SE_logs")
 
 
     tb_logger.log_hyperparams(config)
@@ -40,12 +38,9 @@ def main(args):
 
     trainer.fit(se_train, se_datamodule)
 
-
-
-
-
-
 if __name__ == "__main__":
 
     config = yaml.load(open("./config.yaml", 'r'), Loader=yaml.FullLoader)
     main(config)
+    
+# python inference.py --path_ckpt "/media/youngwon/Neo/NeoChoi/Projects/AECNN_for_Speech_Enhancement/logger/SRGAN_logs/version_4/checkpoints/output.ckpt" --path_in “/media/youngwon/Neo/NeoChoi/Projects/test/noisy.wav”
