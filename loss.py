@@ -2,7 +2,6 @@ import torch
 
 class STFTLoss:
     def __init__(self, config):
-        self.name = "STFTLoss"
         self.stft_risum = stft_RIsum(
             nfft = config['loss']['window_size'],
             window_size = config['loss']['window_size'],
@@ -21,9 +20,6 @@ class STFTLoss:
             total_loss+=loss
    
         return total_loss/total_num
-    
-    def get_name(self):
-        return self.name
 
 class stft_RIsum:
     def __init__(self, nfft, window_size, hop_size):
@@ -34,9 +30,11 @@ class stft_RIsum:
     def __call__(self, x):
         
         window = torch.hann_window(self.window_size).to(x.device)
-        X = torch.stft(x, n_fft = self.nfft, hop_length=self.hop_size, win_length=self.window_size,
+        x_stft = torch.stft(x, n_fft = self.nfft, hop_length=self.hop_size, win_length=self.window_size,
                     window = window, return_complex=True)
+        real = x_stft[...,0]
+        imag = x_stft[...,1]
         
-        return torch.abs(X[...,0]) + torch.abs(X[...,1])
+        return torch.abs(real) + torch.abs(imag)
     
     
