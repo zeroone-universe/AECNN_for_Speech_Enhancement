@@ -41,5 +41,3 @@ if __name__ == "__main__":
 
     config = yaml.load(open("./config.yaml", 'r'), Loader=yaml.FullLoader)
     main(config)
-    
-# python inference.py --path_ckpt "/media/youngwon/Neo/NeoChoi/Projects/AECNN_for_Speech_Enhancement/logger/SRGAN_logs/version_4/checkpoints/output.ckpt" --path_in “/media/youngwon/Neo/NeoChoi/Projects/test/noisy.wav”
