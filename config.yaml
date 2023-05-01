@@ -13,17 +13,15 @@ random_seed: 0b011011
 dataset:
 
 #directory that have every dataset in it.
-  data_dir: /media/youngwon/Neo/NeoChoi/Dataset/noisy-vctk-16k-speechbrain
+  data_dir: /media/zeroone
 
-  # clean_train: "clean/train"
   clean_train: "clean_trainset_28spk_wav_16k"
   clean_val: "clean_testset_wav_16k"
 
-  # noisy_train: "noisy/train"
   noisy_train: "noisy_trainset_28spk_wav_16k"
   noisy_val: "noisy_testset_wav_16k"
 
-#So for this case, wideband test dataset should be located at "/media/zeroone/target/test"
+#So for this case, noisy validation dataset should be located at "/media/zeroone/noisy_testset_wav_16k"
 
   frame_size: 2048
   hop_size: 256
@@ -67,4 +65,9 @@ train:
 #Path of output of validation. 
   output_dir_path: "./output"
   logger_path: "./logger"
+
+  devices:
+    - 0
+    #- 1
+    # -2 ... if you are using DDP
 

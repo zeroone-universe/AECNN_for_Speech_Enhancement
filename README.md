@@ -29,6 +29,7 @@ The trained model will be saved as ckpt file in 'logger' directory. You can then
 Directory-level inference is planned to be supported soon.
 
 ## Note
+- 2023.5.1 This code now supports Distributed Data Parallel (DDP) training!
 - 2023.4.28 The code has been modified to be compatible with PyTorch Lightning 2.0 environment! It includes support for inference as well.
 - Feel free to provide issues!
 

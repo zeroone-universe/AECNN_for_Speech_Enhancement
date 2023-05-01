@@ -1,10 +1,9 @@
-from AECNN_for_Speech_Enhancement.datamodule import SEDataModule
-
 from train import SETrain
 
 from pytorch_lightning import loggers as pl_loggers
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint
+from datamodule import SEDataModule
 
 import yaml
 from utils import *
@@ -29,7 +28,7 @@ def main(args):
     monitor = "val_loss"
     )
 
-    trainer=pl.Trainer(devices=1, accelerator="gpu",
+    trainer=pl.Trainer(devices=config['train']['devices'], accelerator="gpu", strategy='ddp',
     max_epochs=config['train']['total_epoch'],
     callbacks= [checkpoint_callback],
     logger=tb_logger,

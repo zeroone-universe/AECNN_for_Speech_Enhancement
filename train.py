@@ -70,7 +70,7 @@ class SETrain(pl.LightningModule):
         
         loss = self.criterion(wav_enh, wav_clean)
 
-        self.log("val_loss", loss, batch_size = self.config['dataset']['batch_size'])
+        self.log("val_loss", loss, batch_size = self.config['dataset']['batch_size'], sync_dist=True)
         
     def on_validation_epoch_end(self):
         
