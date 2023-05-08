@@ -80,7 +80,7 @@ class SETrain(pl.LightningModule):
         sample_clean =sample_clean.to(self.device)
         
         sample_enh = self.synth_one_sample(sample_noisy)
-        sample_enh = sample_enh.squeeze(0).cpu()
+        sample_enh = sample_enh.cpu()
         
         ta.save(f"{self.output_dir_path}/sample_{self.current_epoch}.wav", sample_enh, 16000)
         
@@ -130,4 +130,5 @@ class SETrain(pl.LightningModule):
         
         wav_rec = wav_rec / (self.frame_size/(2*self.hop_size))
         
+        wav_rec = wav_rec.squeeze(0)
         return wav_rec

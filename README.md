@@ -24,9 +24,11 @@ To run the code on your own machine, follow these steps:
 
 The trained model will be saved as ckpt file in 'logger' directory. You can then use the trained model to perform real-time speech frequency bandwidth extension on your own audio wav file by running the 'inference.py' file as
 
-```python inference.py --path_ckpt <path of checkpoint file> --path_in <path of wav file>```
+```python inference.py --mode "wav" --path_ckpt <path of checkpoint file> --path_in <path of wav file>```
 
-Directory-level inference is planned to be supported soon.
+This repository also support directory-level inference, where the inference is performed on a directory consisting of wav files. You can use the following example to perform directory-level inference,
+
+```python inference.py --mode "dir" --path_ckpt <path of checkpoint file> --path_in <path of directory that contains input wave files> --path_out <path of directory that output files will be saved>```
 
 ## Note
 - 2023.5.1 This code now supports Distributed Data Parallel (DDP) training!
