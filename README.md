@@ -1,4 +1,4 @@
-# Real-time Speech Frequency Bandwidth Extension
+# A New Framework for CNN-Based Speech Enhancement in the Time Domain
 
 This repository contains the unofficial pytorch lightning implementation of the model described in the paper [A New Framework for CNN-Based Speech Enhancement in the Time Domain](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=8701652) by Ashutosh Pandey and Deliang Wang. 
 
